@@ -7,6 +7,7 @@ export const Navbar = () => {
                 <Link href={'/login'}>Login</Link>
             </div>
             <div className={'flex gap-5 pr-5'}>
+                <Link href={'/profile'}>Profile</Link>
                 <Link href={'/about'}>About</Link>
                 <Link href={'/dashboard'}>Dashboard</Link>
             </div>

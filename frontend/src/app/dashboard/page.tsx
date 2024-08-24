@@ -3,14 +3,14 @@
 import { useContext } from 'react';
 import { AuthContext } from '@/context/auth';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function DashboardPage() {
-    const auth = useContext(AuthContext);
+    const { email, isLoggedIn } = useAuth();
     const router = useRouter();
     return (
 
-        auth?.email ?
-            <div className="bg-amber-400">
-                Dashboard Page
-            </div> : router.push('/login'));
+        <div className="bg-amber-400">
+            Dashboard Page
+        </div>);
 }

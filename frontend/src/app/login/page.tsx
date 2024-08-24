@@ -11,19 +11,22 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { AuthContext } from '@/context/auth';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function LoginPage() {
     const [email, setEmail] = useState('');
     const [pWord, setPword] = useState('');
-    const auth = useContext(AuthContext);
+    const { next } = useSearchParams();
+    const auth = useAuth();
     const router = useRouter();
 
     const onSubmit = () => {
-        console.log(email, pWord);
         auth?.setName('Nate');
         auth?.setEmail('hey');
-        router.push('/dashboard');
+        auth?.setIsLoggedIn(true);
+        console.log(next);
+        router.push(next || '/profile');
     };
 
     return (
