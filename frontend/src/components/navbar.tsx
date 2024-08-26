@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 export const Navbar = () => {
     return (
-        <div className="pl-2 flex bg-zinc-300 h-12 items-center gap-5 justify-between">
+        <div className="pl-2 flex bg-zinc-300 h-12 items-center gap-5 justify-between ">
             <div>
                 <Link href={'/login'}>Login</Link>
             </div>
@@ -10,6 +10,9 @@ export const Navbar = () => {
                 <Link href={'/profile'}>Profile</Link>
                 <Link href={'/about'}>About</Link>
                 <Link href={'/dashboard'}>Dashboard</Link>
+                <Link href={'/register'}>Register</Link>
+
+
             </div>
 
         </div>);
