@@ -17,7 +17,8 @@ export default function RegisterPage() {
         }),
         email: z.string().email({
             message: 'Invalid email,please enter  a correct one dawg.'
-        })
+        }),
+        resume: z.instanceof(FileList).optional()
     });
 
     const form = useForm<z.infer<typeof formSchema>>(
@@ -27,10 +28,24 @@ export default function RegisterPage() {
         }
     );
 
+    const fileRef = form.register('resume');
+
     const onSubmit = (data: z.infer<typeof formSchema>) => {
+        console.log(data);
         api.call('/register/user', 'POST', data).then(res => {
             console.log(res);
         });
+
+        const formData = new FormData();
+        if (data.resume) {
+            formData.append('resume', data.resume[0]);
+            fetch('http://localhost:3001/register/file', {
+                method: 'POST',
+                body: formData
+            }).then(res => res.json()).then(console.log);
+
+        }
+
     };
 
 
@@ -67,6 +82,28 @@ export default function RegisterPage() {
                         </FormItem>
 
                     )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="resume"
+                        render={({ field: { value, onChange, ...fieldProps } }) => (
+                            <FormItem>
+                                <FormLabel>Resume</FormLabel>
+                                <FormControl>
+                                    <Input type={'file'} placeholder={'Resume'} {...fileRef}/>
+                                    {/*<Input*/}
+                                    {/*    {...fieldProps}*/}
+                                    {/*    placeholder="Resume"*/}
+                                    {/*    type="file"*/}
+                                    {/*    accept="image/*, application/pdf"*/}
+                                    {/*    onChange={(event) =>*/}
+                                    {/*        onChange(event.target.files && event.target.files[0])*/}
+                                    {/*    }*/}
+                                    {/*/>*/}
+                                </FormControl>
+                                <FormMessage/>
+                            </FormItem>
+                        )}
                     />
                     <Button type="submit" className={'mt-2'}>Submit</Button>
                 </form>

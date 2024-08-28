@@ -1,8 +1,9 @@
 import { useState } from 'react';
 
 export const useAPI = () => {
-    const baseURL = 'http://localhost:3001';
+    const baseURL = 'http://localhost:3002';
     const [loading, setLoading] = useState<boolean>(false);
+    const token = localStorage.getItem('token');
 
 
     const call = <T>(url: string, method: 'GET' | 'POST', data?: any) => {
@@ -12,12 +13,11 @@ export const useAPI = () => {
         } : {
             method: method,
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify(data)
-
         };
-
 
         return fetch(`${baseURL}${url}`, fetchParams)
             .then(res => res.json())

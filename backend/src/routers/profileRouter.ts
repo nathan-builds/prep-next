@@ -1,9 +1,11 @@
 import express, { Express, Request, Response } from 'express';
-import { profileController } from '../controllers/profileController';
+import { newPostController, profileController } from '../controllers/profileController';
+import { protectRoute } from '../middleware/authorizeRoute';
 
 const router = express.Router();
 
-router.route('/posts').get(profileController);
+router.route('/posts').get(protectRoute, profileController);
+router.route('/new-post').post(newPostController)
 
 
 export default router;

@@ -1,55 +1,85 @@
 'use client';
 import React, { useContext, useState } from 'react';
-import { Input } from '@/components/ui/input';
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { AuthContext } from '@/context/auth';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import { useAuth } from '@/hooks/useAuth';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel } from '@/components/ui/form';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { FormInput } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { useAPI } from '@/hooks/useAPI';
+import { useAuth } from '@/context/authContext';
 
 export default function LoginPage() {
     const [email, setEmail] = useState('');
     const [pWord, setPword] = useState('');
-    const { next } = useSearchParams();
+    // const { next } = useSearchParams();
+    const api = useAPI();
     const auth = useAuth();
-    const router = useRouter();
 
-    const onSubmit = () => {
-        auth?.setName('Nate');
-        auth?.setEmail('hey');
-        auth?.setIsLoggedIn(true);
-        console.log(next);
-        router.push(next || '/profile');
+    const formSchema = z.object({
+        username: z.string().min(5).max(10),
+        password: z.string().min(2).max(20)
+    });
+
+    const onSubmit = async (data: z.infer<typeof formSchema>) => {
+        const token = await api.call<{ token: string }>('/auth/login', 'POST', data);
+        if (!token) {
+            console.log('No token');
+            return;
+        }
+        auth.setToken(token.token);
+        localStorage.setItem('token', token.token);
+
+
     };
 
+
+    const form = useForm<z.infer<typeof formSchema>>(
+        {
+            resolver: zodResolver(formSchema),
+            defaultValues: {
+                username: '',
+                password: ''
+            }
+        }
+    );
+
+
     return (
-        <div className="flex justify-center mt-20">
-            <Card className="w-1/2 ">
-                <CardHeader>
-                    <CardTitle>Login</CardTitle>
-                    <CardDescription>Login to awesome app</CardDescription>
-                </CardHeader>
-                <CardContent className="flex flex-col gap-2">
-                    <Input value={email} placeholder={'Enter email'} className=""
-                           onChange={(event) => setEmail(event.target.value)}></Input>
-                    <Input value={pWord} placeholder={'Enter email'} className=""
-                           onChange={(event) => setPword(event.target.value)}></Input>
-                    <Button onClick={onSubmit}>Submit</Button>
-                </CardContent>
+        <div className={'flex w-full items-center justify-center mt-20'}>
+            <Form {...form} >
+                <form onSubmit={form.handleSubmit(onSubmit)} className="w-1/2">
+                    <FormField control={form.control} name={'username'} render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Username </FormLabel>
+                            <FormControl>
+                                <Input placeholder={'username...'} {...field}></Input>
 
+                            </FormControl>
+                            <FormDescription></FormDescription>
+                        </FormItem>
+                    )}>
+                    </FormField>
+                    <FormField control={form.control} name={'password'} render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Password </FormLabel>
+                            <FormControl>
+                                <Input placeholder={'password..'} {...field} type={'password'}></Input>
+                            </FormControl>
+                            <FormDescription></FormDescription>
+                        </FormItem>
+                    )}>
 
-                {/*<CardFooter>*/}
-                {/*    <p>Card Footer</p>*/}
-                {/*</CardFooter>*/}
-            </Card>
-        </div>);
+                    </FormField>
+                    <Button type={'submit'}>Login</Button>
+                </form>
+
+            </Form>
+        </div>
+
+    );
 }
 
 
